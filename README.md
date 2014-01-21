@@ -11,6 +11,7 @@ Application to export language data from Microsoft language pack lp.cab files
 gems:
 
 * `libmspack` (required)
+* `pedump` (required)
 
 ## Usage
 
