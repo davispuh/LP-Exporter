@@ -48,7 +48,8 @@ module LP
             # Start Application
             def self.start
                 options = getOptions
-                if not options or options[:LP].nil?
+                return false if not options
+                if options[:LP].nil?
                     puts options[:Parser].help
                     return false
                 end
