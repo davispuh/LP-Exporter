@@ -36,23 +36,24 @@ module LP
             file = cab.files
             fileList = {}
             begin
-                path = Pathname.new(file.getFilename)
+                pathname = file.getFilename.gsub('\\', '/')
+                path = Pathname.new(pathname)
                 next unless path.extname == '.mui'
-                realname = path.basename('.*').to_s
+                realname = path.basename('.*')
                 found = (files.count == 0)
                 files.each do |str|
-                    if realname.match(str)
+                    if realname.fnmatch?(str + '*', File::FNM_DOTMATCH | File::FNM_PATHNAME | File::FNM_CASEFOLD)
                         found = true
                         break
                     end
                 end
                 next unless found
-                nameparts = realname.split('.')
+                nameparts = realname.to_s.split('.')
                 base = nameparts.first
                 namelen = nameparts.length
                 namelen -= 1 if nameparts[-1] == 'dll'
                 name = nameparts[0, namelen].join('.')
-                data = path.dirname.to_s.split('_')
+                data = path.dirname.basename.to_s.split('_')
                 arch = data[0]
                 lang = data[-2]
                 newName = [lang, arch, realname].join('_')
@@ -73,7 +74,7 @@ module LP
         # @param [Array] entry info about file
         # @param [Boolean] lang if should use language name rather than LangID
         def self.export(path, entry, lang = false)
-            filepath = File.join(path, entry.first)+'.yml'
+            filepath = File.join(path, entry.first)+'.yaml'
             data = {}
             data = YAML.load_file(filepath) if File.exists?(filepath)
             langName = entry[1]
